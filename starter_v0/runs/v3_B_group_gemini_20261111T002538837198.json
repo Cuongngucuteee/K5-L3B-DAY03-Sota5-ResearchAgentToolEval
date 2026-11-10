@@ -1,0 +1,718 @@
+{
+  "run_id": "v3_B_group_gemini_20261111T002538837198",
+  "version": "v3",
+  "artifact_version": "v3+padac62a717ee+t952b3d7d4568",
+  "prompt_hash": "adac62a717ee27150ca9f54f1e397432663117360817da75a20bb5646fdbb40e",
+  "tools_hash": "952b3d7d45687ccbf2ba8c30e5465f05af308b53ef2a02400c89aed4408bbfb9",
+  "phase": "B",
+  "suite": "group",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash",
+  "system_prompt": "artifacts\\system_prompt.md",
+  "tools": "artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_group.json",
+  "dataset_id": "day03_v2_research_group",
+  "dataset_role": "group",
+  "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
+  "generated_at": "2026-11-11T00:25:38",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 7,
+    "provider_error_cases": 3,
+    "passed_cases": 7,
+    "case_accuracy": 1.0,
+    "tool_routing_accuracy": 1.0,
+    "argument_accuracy": 1.0,
+    "multiturn_accuracy": 1.0,
+    "failure_counts": {},
+    "observed_mismatch_counts": {}
+  },
+  "results": [
+    {
+      "id": "G01_hn_topic_and_limit",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Chọn công cụ Hacker News, truyền đúng cụm từ và số lượng; không chấm sort vì chưa có enum chính thức của nhóm."
+      },
+      "input": "Tìm 4 bài trên Hacker News về cụm từ \"supply chain security\". Giữ nguyên cụm từ này khi tìm kiếm.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "hn_search",
+            "args": {
+              "query": "supply chain security",
+              "limit": 4
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "hn_search",
+            "args": {
+              "limit": 4,
+              "query": "supply chain security"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "hn_search",
+          "args": {
+            "limit": 4,
+            "query": "supply chain security"
+          },
+          "result": {
+            "tool": "hn_search",
+            "query": "supply chain security",
+            "sort": "relevance",
+            "items": [
+              {
+                "title": "Bringing supply chain security features to the Go community",
+                "url": "https://github.blog/2021-07-22-github-supply-chain-security-features-go-community/",
+                "source": "github.blog",
+                "score": 183,
+                "hn_id": "27928464",
+                "hn_url": "https://news.ycombinator.com/item?id=27928464",
+                "summary": "183 points by lmas, 71 comments"
+              },
+              {
+                "title": "Fifty Years of Open Source Software Supply Chain Security",
+                "url": "https://queue.acm.org/detail.cfm?id=3722542",
+                "source": "queue.acm.org",
+                "score": 182,
+                "hn_id": "43614199",
+                "hn_url": "https://news.ycombinator.com/item?id=43614199",
+                "summary": "182 points by yarapavan, 83 comments"
+              },
+              {
+                "title": "Supply Chain Security Is the Whole Enchilada, but Who’s Willing to Pay for It?",
+                "url": "https://krebsonsecurity.com/2018/10/supply-chain-security-is-the-whole-enchilada-but-whos-willing-to-pay-for-it/",
+                "source": "krebsonsecurity.com",
+                "score": 148,
+                "hn_id": "18155517",
+                "hn_url": "https://news.ycombinator.com/item?id=18155517",
+                "summary": "148 points by johnshades, 85 comments"
+              },
+              {
+                "title": "Open source supply chain security at Google [video]",
+                "url": "https://research.swtch.com/acmscored",
+                "source": "research.swtch.com",
+                "score": 126,
+                "hn_id": "38471475",
+                "hn_url": "https://news.ycombinator.com/item?id=38471475",
+                "summary": "126 points by mfrw, 25 comments"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_format_existing_items",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Dùng dữ liệu được cung cấp để định dạng, không gọi công cụ tìm kiếm; cần đọc thủ công args.items để kiểm tra dữ liệu được giữ nguyên."
+      },
+      "input": "Tôi đã có dữ liệu sau, không cần tìm thêm: [{\"title\":\"Lab update\",\"url\":\"https://example.org/lab-update\",\"source\":\"Team notes\",\"summary\":\"Nhóm đã bổ sung bài kiểm tra.\"}]. Hãy trình bày thành danh sách gạch đầu dòng với tiêu đề \"Ghi chú nhóm\".",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "format",
+            "args": {
+              "template": "bullets",
+              "headline": "Ghi chú nhóm"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "format",
+            "args": {
+              "headline": "Ghi chú nhóm",
+              "template": "bullets",
+              "items": [
+                {
+                  "summary": "Nhóm đã bổ sung bài kiểm tra.",
+                  "url": "https://example.org/lab-update",
+                  "title": "Lab update",
+                  "source": "Team notes"
+                }
+              ]
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "format",
+          "args": {
+            "headline": "Ghi chú nhóm",
+            "template": "bullets",
+            "items": [
+              {
+                "summary": "Nhóm đã bổ sung bài kiểm tra.",
+                "url": "https://example.org/lab-update",
+                "title": "Lab update",
+                "source": "Team notes"
+              }
+            ]
+          },
+          "result": {
+            "tool": "render_digest",
+            "template": "bullets",
+            "markdown": "- Nhóm đã bổ sung bài kiểm tra. - [Team notes](https://example.org/lab-update)",
+            "item_count": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "G03_social_latest_limit",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Kiểm tra đồng thời query, Latest và limit; phân biệt bài mới nhất với bài top."
+      },
+      "input": "Tìm 4 bài đăng mới nhất trên X chứa cụm từ \"passkey adoption\"; giữ nguyên cụm từ tìm kiếm, ưu tiên mới nhất chứ không phải phổ biến nhất.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "passkey adoption",
+              "search_type": "Latest",
+              "limit": 4
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "limit": 4,
+              "query": "passkey adoption",
+              "search_type": "Latest"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "social_search",
+          "args": {
+            "limit": 4,
+            "query": "passkey adoption",
+            "search_type": "Latest"
+          },
+          "result": {
+            "tool": "search_tweets",
+            "query": "passkey adoption",
+            "search_type": "Latest",
+            "items": [
+              {
+                "title": "Coinbase x402, privacy breakthroughs, new smart contract proposals, DeFi launches &amp; critical security updates.",
+                "summary": "Coinbase x402, privacy breakthroughs, new smart contract proposals, DeFi launches &amp; critical security updates.\n\nWe break down what's LIVE, what's still research, and why it matters for Monad's future.\n\n💬 Which development excites you most? https://t.co/HTLqPf7EGA",
+                "url": "https://x.com/BlockPro_/status/2119864366308696378",
+                "source": "@BlockPro_",
+                "date": "Mon Nov 09 18:47:04 +0000 2026",
+                "metrics": {
+                  "favorites": 1,
+                  "retweets": 0,
+                  "views": "407"
+                }
+              },
+              {
+                "title": "https://t.co/KRvYoFyaeS",
+                "summary": "https://t.co/KRvYoFyaeS",
+                "url": "https://x.com/Cryptfancier/status/2119677196885180729",
+                "source": "@Cryptfancier",
+                "date": "Mon Nov 09 06:23:20 +0000 2026",
+                "metrics": {
+                  "favorites": 328,
+                  "retweets": 244,
+                  "views": "2058"
+                }
+              },
+              {
+                "title": "Did you know that despite 42% of users enrolling in passkey systems, passwords still dominate sign-ins? This shows the c",
+                "summary": "Did you know that despite 42% of users enrolling in passkey systems, passwords still dominate sign-ins? This shows the challenge of widespread adoption and the tendency to revert to familiar, yet insecure methods. What steps are you taking to enhance security? #Cybersecurity",
+                "url": "https://x.com/ProfSimonOnline/status/2119610967994564789",
+                "source": "@ProfSimonOnline",
+                "date": "Mon Nov 09 02:00:09 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 0,
+                  "views": "5"
+                }
+              },
+              {
+                "title": "TRON’s recent numbers tell a bigger story than simple blockchain growth.",
+                "summary": "TRON’s recent numbers tell a bigger story than simple blockchain growth.\n\nMore than 400M total accounts, over $213M moved through TRON via WalletConnect in H1 2026, and more than $100M in swaps through deBridge within 30 days show an ecosystem increasingly connected to real capital flows.\n\nThe activity is also spreading across different layers of the network:\n\n→ 1,221 apps across 185 countries connected through WalletConnect\n→ $5M+ moved through TRON via Allbridge in just 7 days\n→ Stablecoin card top-ups reached $13.8B cumulatively, with TRON representing 21% of August volume\n→ TRON continues expanding its interoperability through integrations such as deBridge, Allbridge, WalletConnect and KiiChain\n\nOn the infrastructure side, GreatVoyage-v4.8.2 brings stronger TVM compatibility with Ethereum’s Prague and Osaka upgrades, alongside historical block-hash queries, CLZ instruction support, native Passkey verification and optimized MODEXP energy consumption.\n\nThat combination matters.\n\nIt means TRON is not simply adding accounts. It is building an environment where stablecoins, cross-chain liquidity, payments, developers and applications can operate at scale.\n\nAnd with H.E. @justinsuntron continuing to represent the ecosystem in conversations around institutional adoption, global capital flows and the future of digital assets, the focus is clearly moving toward broader financial infrastructure.\n\nThe real signal is not one milestone.\n\nIt is the consistency of the activity behind them.\n\nTRON is becoming infrastructure for moving value. 🚀\n\n@trondao @justinsuntron #TRONEcoStar",
+                "url": "https://x.com/Teddo_ICO/status/2119494002579734742",
+                "source": "@Teddo_ICO",
+                "date": "Sun Nov 08 18:15:23 +0000 2026",
+                "metrics": {
+                  "favorites": 1,
+                  "retweets": 0,
+                  "views": "110142"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G04_missing_platform",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Thiếu nền tảng tìm kiếm và có yêu cầu hỏi trước: không tự chọn Hacker News, X hoặc web."
+      },
+      "input": "Tìm các bài đăng về \"database reliability\" trên nền tảng tôi đã chọn nhé. Tôi chưa nói tên nền tảng trong cuộc trò chuyện này, hãy hỏi lại tôi trước khi tìm.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {}
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn muốn tìm bài đăng về \"database reliability\" trên nền tảng nào?",
+              "options": [
+                "Hacker News",
+                "X (Twitter)",
+                "Web / Tin tức"
+              ],
+              "response_type": "choice"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn muốn tìm bài đăng về \"database reliability\" trên nền tảng nào?",
+            "options": [
+              "Hacker News",
+              "X (Twitter)",
+              "Web / Tin tức"
+            ],
+            "response_type": "choice"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn muốn tìm bài đăng về \"database reliability\" trên nền tảng nào?",
+            "response_type": "choice",
+            "options": [
+              "Hacker News",
+              "X (Twitter)",
+              "Web / Tin tức"
+            ],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G05_unsupported_calendar",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Không gọi công cụ research hoặc Telegram để giả lập đặt lịch khi không có công cụ lịch; kiểm tra thủ công câu trả lời có nói rõ giới hạn."
+      },
+      "input": "Tạo ngay một sự kiện trong Google Calendar của tôi tên \"Họp nhóm lab\", lúc 09:00 ngày mai, kéo dài 30 phút. Tôi chỉ cần đặt lịch, không cần tìm thông tin.",
+      "expect": {
+        "no_tool": true
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "out_of_scope",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G06_hn_query_limit_correction",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Cập nhật cả chủ đề và số lượng qua nhiều lượt, vẫn dùng Hacker News; không chấm sort."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm 6 bài trên Hacker News với từ khóa \"PostgreSQL\"."
+        },
+        {
+          "role": "user",
+          "content": "Đổi từ khóa thành \"SQLite\", giữ nguyên cách sắp xếp."
+        },
+        {
+          "role": "user",
+          "content": "Lấy 2 bài thôi, dùng đúng từ khóa mới đã chọn."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "hn_search",
+            "args": {
+              "query": "SQLite",
+              "limit": 2
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "hn_search",
+            "args": {
+              "sort": "relevance",
+              "query": "SQLite",
+              "limit": 2
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "hn_search",
+          "args": {
+            "sort": "relevance",
+            "query": "SQLite",
+            "limit": 2
+          },
+          "result": {
+            "tool": "hn_search",
+            "query": "SQLite",
+            "sort": "relevance",
+            "items": [
+              {
+                "title": "Hosting SQLite databases on GitHub Pages or any static file hoster",
+                "url": "https://phiresky.github.io/blog/2021/hosting-sqlite-databases-on-github-pages/",
+                "source": "phiresky.github.io",
+                "score": 1812,
+                "hn_id": "27016630",
+                "hn_url": "https://news.ycombinator.com/item?id=27016630",
+                "summary": "1812 points by phiresky, 244 comments"
+              },
+              {
+                "title": "I'm all-in on server-side SQLite",
+                "url": "https://fly.io/blog/all-in-on-sqlite-litestream/",
+                "source": "fly.io",
+                "score": 1353,
+                "hn_id": "31318708",
+                "hn_url": "https://news.ycombinator.com/item?id=31318708",
+                "summary": "1353 points by dpeck, 404 comments"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_hn_to_web_month",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Đổi nguồn từ Hacker News sang web và mang theo chủ đề, timeframe, số lượng mới."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm 5 bài trên Hacker News về \"WebAssembly\"."
+        },
+        {
+          "role": "user",
+          "content": "Chuyển sang tin tức trên web trong tháng qua, không tìm Hacker News nữa."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ lấy 2 kết quả; giữ nguyên từ khóa \"WebAssembly\" và khoảng thời gian vừa chọn."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "WebAssembly",
+              "topic": "news",
+              "timeframe": "month",
+              "max_results": 2
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "topic": "news",
+              "max_results": 2,
+              "query": "WebAssembly",
+              "timeframe": "month"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "topic": "news",
+            "max_results": 2,
+            "query": "WebAssembly",
+            "timeframe": "month"
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "WebAssembly",
+            "topic": "news",
+            "timeframe": "month",
+            "items": [
+              {
+                "title": "WebAssembly Didn’t Miss the Moment. AI Was Just Late.",
+                "url": "https://www.akamai.com/blog/edge/webassembly-didnt-miss-the-moment-ai-was-just-late",
+                "source": "akamai.com",
+                "summary": "# WebAssembly Didn’t Miss the Moment. AI Was Just Late.\n\nShare\n\nA few years ago, WebAssembly was the format that let a game engine or a design tool like Figma run in your browser at near-native speed. It was designed around one very specific problem: Run code that you didn't review, from a source you don't fully trust — safely, instantly, and anywhere.\n\nNow, think about what an AI agent does all day:\n\nIt writes a Python script to clean up a CSV. [...] It generates a function to call an API it found in the docs five seconds ago.\n\nIt tries something, fails, rewrites it, and tries again.\n\nThat’s code nobody reviewed, from a source nobody fully trusts, that needs to start instantly and run anywhere.\n\nSound familiar? The problem WebAssembly was built to solve is exactly the problem that agents just created.\n\nToday, we're making two things official. [...] Akamai Agent Sandbox building blocks headed to Spin, the open source framework under Akamai Functions\n\n## Why WebAssembly is a great fit for AI workloads\n\nWhere should agent-generated code run? It needs to be isolated, it needs to start fast, and it shouldn’t cost much to keep ready. Containers and VMs handle isolation well, but speed and cost are where they struggle.\n\nWebAssembly flips that trade-off. Four properties matter most for AI and agent workloads:",
+                "score": 0.78054583
+              },
+              {
+                "title": "What’s new in MLE 23.26.4: WebAssembly lands in Oracle AI Database | developers",
+                "url": "https://blogs.oracle.com/developers/whats-new-in-mle-23-26-4-webassembly-lands-in-oracle-ai-database",
+                "source": "blogs.oracle.com",
+                "summary": "With Release Update 23.26.4, it gains support for WebAssembly (Wasm) modules. The feature is available now on Autonomous Database, with other deployment options to follow shortly.\n\nWebAssembly is a portable binary format for code that can run in different environments. Programs written in languages such as C, Rust, and Go can be compiled to Wasm. Now, suitable Wasm libraries can run inside Oracle AI Database and be called from MLE JavaScript. [...] To use a library, you can store its Wasm binary as an MLE module and load its JavaScript bindings as a JavaScript module. Your JavaScript code imports the Wasm module and calls the library’s functions. Those functions can then form part of an application’s database logic.\n\nI’ll share more technical examples in the coming weeks. In the meantime, please head over to the MLE WebAssembly documentation. We also plan to update the MLE LiveLabs so you can try the feature without setting up anything! [...] What can you do with that? Image processing is one example: a Wasm library can resize an image stored in the database. Other tasks, such as optical character recognition, may also be possible with libraries whose Wasm modules and JavaScript bindings work in MLE.",
+                "score": 0.77137923
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G08_select_second_url",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Giải quyết tham chiếu link thứ hai trong hai URL; không gọi fetch cho cả hai."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tôi có hai link: https://docs.python.org/3/library/json.html và https://docs.python.org/3/library/csv.html ."
+        },
+        {
+          "role": "user",
+          "content": "Tôi đang quan tâm cách xử lý CSV."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ đọc và tóm tắt link thứ hai tôi đã gửi, bỏ link thứ nhất."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://docs.python.org/3/library/csv.html"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G09_cancel_telegram",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Tôn trọng việc hủy yêu cầu gửi ở lượt mới nhất; không gọi send hoặc clarify. Case không yêu cầu gửi thật."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Nội dung dự thảo: \"Nhóm sẽ demo agent vào chiều mai.\" Tôi muốn đăng lên Telegram nhưng chưa xác nhận gửi."
+        },
+        {
+          "role": "user",
+          "content": "Tôi đổi ý, hủy yêu cầu đăng."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ xác nhận bằng lời rằng đã hủy. Không gửi, không tìm kiếm và không hỏi xác nhận gửi nữa."
+        }
+      ],
+      "expect": {
+        "no_tool": true
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Dạ vâng, tôi xác nhận đã hủy yêu cầu gửi tin nhắn lên Telegram. Sẽ không có tin nhắn nào được gửi đi.",
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G10_format_template_correction",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Nhớ dữ liệu đã có, cập nhật template bullets thành thread và tiêu đề; đọc thủ công args.items để xác minh dữ liệu."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Dữ liệu có sẵn: [{\"title\":\"Eval checklist\",\"url\":\"https://example.org/eval-checklist\",\"source\":\"Team notes\",\"summary\":\"Kiểm tra routing và tham số.\"}]. Hãy dùng dữ liệu này để tạo danh sách gạch đầu dòng."
+        },
+        {
+          "role": "user",
+          "content": "Đổi cách trình bày thành chuỗi bài đánh số, tức template thread."
+        },
+        {
+          "role": "user",
+          "content": "Đặt tiêu đề \"Nhật ký kiểm thử\", giữ kiểu trình bày vừa sửa và dữ liệu ban đầu; không tìm thêm nguồn."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "format",
+            "args": {
+              "template": "thread",
+              "headline": "Nhật ký kiểm thử"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    }
+  ]
+}

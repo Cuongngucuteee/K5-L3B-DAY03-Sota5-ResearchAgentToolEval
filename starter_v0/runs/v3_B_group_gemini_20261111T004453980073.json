@@ -1,0 +1,779 @@
+{
+  "run_id": "v3_B_group_gemini_20261111T004453980073",
+  "version": "v3",
+  "artifact_version": "v3+padac62a717ee+t952b3d7d4568",
+  "prompt_hash": "adac62a717ee27150ca9f54f1e397432663117360817da75a20bb5646fdbb40e",
+  "tools_hash": "952b3d7d45687ccbf2ba8c30e5465f05af308b53ef2a02400c89aed4408bbfb9",
+  "phase": "B",
+  "suite": "group",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash",
+  "system_prompt": "artifacts\\system_prompt.md",
+  "tools": "artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_group.json",
+  "dataset_id": "day03_v2_research_group",
+  "dataset_role": "group",
+  "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
+  "generated_at": "2026-11-11T00:44:53",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 10,
+    "provider_error_cases": 0,
+    "passed_cases": 9,
+    "case_accuracy": 0.9,
+    "tool_routing_accuracy": 1.0,
+    "argument_accuracy": 0.9,
+    "multiturn_accuracy": 1.0,
+    "failure_counts": {
+      "wrong_tool": 1
+    },
+    "observed_mismatch_counts": {
+      "wrong_arg_value": 1
+    }
+  },
+  "results": [
+    {
+      "id": "G01_hn_topic_and_limit",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Chọn công cụ Hacker News, truyền đúng cụm từ và số lượng; không chấm sort vì chưa có enum chính thức của nhóm."
+      },
+      "input": "Tìm 4 bài trên Hacker News về cụm từ \"supply chain security\". Giữ nguyên cụm từ này khi tìm kiếm.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "hn_search",
+            "args": {
+              "query": "supply chain security",
+              "limit": 4
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": true,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "hn_search",
+            "args": {
+              "limit": 4,
+              "query": "\"supply chain security\""
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "wrong_arg_value",
+        "failure_type": "wrong_tool",
+        "failures": [
+          "query: expected 'supply chain security', got '\"supply chain security\"'"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "hn_search",
+          "args": {
+            "limit": 4,
+            "query": "\"supply chain security\""
+          },
+          "result": {
+            "tool": "hn_search",
+            "query": "\"supply chain security\"",
+            "sort": "relevance",
+            "items": [
+              {
+                "title": "Bringing supply chain security features to the Go community",
+                "url": "https://github.blog/2021-07-22-github-supply-chain-security-features-go-community/",
+                "source": "github.blog",
+                "score": 183,
+                "hn_id": "27928464",
+                "hn_url": "https://news.ycombinator.com/item?id=27928464",
+                "summary": "183 points by lmas, 71 comments"
+              },
+              {
+                "title": "Fifty Years of Open Source Software Supply Chain Security",
+                "url": "https://queue.acm.org/detail.cfm?id=3722542",
+                "source": "queue.acm.org",
+                "score": 182,
+                "hn_id": "43614199",
+                "hn_url": "https://news.ycombinator.com/item?id=43614199",
+                "summary": "182 points by yarapavan, 83 comments"
+              },
+              {
+                "title": "Supply Chain Security Is the Whole Enchilada, but Who’s Willing to Pay for It?",
+                "url": "https://krebsonsecurity.com/2018/10/supply-chain-security-is-the-whole-enchilada-but-whos-willing-to-pay-for-it/",
+                "source": "krebsonsecurity.com",
+                "score": 148,
+                "hn_id": "18155517",
+                "hn_url": "https://news.ycombinator.com/item?id=18155517",
+                "summary": "148 points by johnshades, 85 comments"
+              },
+              {
+                "title": "Open source supply chain security at Google [video]",
+                "url": "https://research.swtch.com/acmscored",
+                "source": "research.swtch.com",
+                "score": 126,
+                "hn_id": "38471475",
+                "hn_url": "https://news.ycombinator.com/item?id=38471475",
+                "summary": "126 points by mfrw, 25 comments"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_format_existing_items",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Dùng dữ liệu được cung cấp để định dạng, không gọi công cụ tìm kiếm; cần đọc thủ công args.items để kiểm tra dữ liệu được giữ nguyên."
+      },
+      "input": "Tôi đã có dữ liệu sau, không cần tìm thêm: [{\"title\":\"Lab update\",\"url\":\"https://example.org/lab-update\",\"source\":\"Team notes\",\"summary\":\"Nhóm đã bổ sung bài kiểm tra.\"}]. Hãy trình bày thành danh sách gạch đầu dòng với tiêu đề \"Ghi chú nhóm\".",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "format",
+            "args": {
+              "template": "bullets",
+              "headline": "Ghi chú nhóm"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "format",
+            "args": {
+              "template": "bullets",
+              "headline": "Ghi chú nhóm",
+              "items": [
+                {
+                  "url": "https://example.org/lab-update",
+                  "title": "Lab update",
+                  "source": "Team notes",
+                  "summary": "Nhóm đã bổ sung bài kiểm tra."
+                }
+              ]
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "format",
+          "args": {
+            "template": "bullets",
+            "headline": "Ghi chú nhóm",
+            "items": [
+              {
+                "url": "https://example.org/lab-update",
+                "title": "Lab update",
+                "source": "Team notes",
+                "summary": "Nhóm đã bổ sung bài kiểm tra."
+              }
+            ]
+          },
+          "result": {
+            "tool": "render_digest",
+            "template": "bullets",
+            "markdown": "- Nhóm đã bổ sung bài kiểm tra. - [Team notes](https://example.org/lab-update)",
+            "item_count": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "G03_social_latest_limit",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Kiểm tra đồng thời query, Latest và limit; phân biệt bài mới nhất với bài top."
+      },
+      "input": "Tìm 4 bài đăng mới nhất trên X chứa cụm từ \"passkey adoption\"; giữ nguyên cụm từ tìm kiếm, ưu tiên mới nhất chứ không phải phổ biến nhất.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "passkey adoption",
+              "search_type": "Latest",
+              "limit": 4
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "limit": 4,
+              "search_type": "Latest",
+              "query": "passkey adoption"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "social_search",
+          "args": {
+            "limit": 4,
+            "search_type": "Latest",
+            "query": "passkey adoption"
+          },
+          "result": {
+            "tool": "search_tweets",
+            "query": "passkey adoption",
+            "search_type": "Latest",
+            "items": [
+              {
+                "title": "Did you know that despite 42% of users enrolling in passkey systems, passwords still dominate sign-ins? This shows the c",
+                "summary": "Did you know that despite 42% of users enrolling in passkey systems, passwords still dominate sign-ins? This shows the challenge of widespread adoption and the tendency to revert to familiar, yet insecure methods. What steps are you taking to enhance security? #Cybersecurity",
+                "url": "https://x.com/ProfSimonOnline/status/2119610967994564789",
+                "source": "@ProfSimonOnline",
+                "date": "Mon Nov 09 02:00:09 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 0,
+                  "views": "5"
+                }
+              },
+              {
+                "title": "One of the biggest barriers to Web3 adoption is still the wallet experience.",
+                "summary": "One of the biggest barriers to Web3 adoption is still the wallet experience.\n\nFor experienced users, managing private keys, signing transactions, and switching networks may feel normal. But for someone entering crypto for the first time, these steps can be confusing and sometimes intimidating.\n\nThis is why smart wallet technology is so important.\n\n@startaleapp is working to make wallet interactions more accessible through features such as social login and passkey-based access.\n\nThe interesting part is that improving wallet technology doesn't just make things more convenient. It can change how people interact with the entire blockchain ecosystem.\n\nWhen users spend less time worrying about technical barriers, they can focus more on discovering applications, managing assets, and exploring new opportunities.\n\nOf course, convenience must always come with strong security and clear control over digital assets.\n\nI believe the next generation of wallets will be judged not by how many features they offer, but by how naturally people can use them.\n\nA wallet should be a gateway to Web3, not the biggest obstacle standing in front of it. \n@StartaleGroup",
+                "url": "https://x.com/MJahangirifard/status/2119095786478657592",
+                "source": "@MJahangirifard",
+                "date": "Sat Nov 07 15:53:01 +0000 2026",
+                "metrics": {
+                  "favorites": 41,
+                  "retweets": 0,
+                  "views": "287"
+                }
+              },
+              {
+                "title": "🔐 𝗧𝗥𝗢𝗡 𝗣𝗔𝗦𝗦𝗞𝗘𝗬𝗦: 𝗠𝗔𝗞𝗜𝗡𝗚 𝗪𝗔𝗟𝗟𝗘𝗧 𝗔𝗖𝗖𝗘𝗦𝗦 𝗦𝗜𝗠𝗣𝗟𝗘𝗥 𝗔𝗡𝗗 𝗦𝗠𝗔𝗥𝗧𝗘𝗥",
+                "summary": "🔐 𝗧𝗥𝗢𝗡 𝗣𝗔𝗦𝗦𝗞𝗘𝗬𝗦: 𝗠𝗔𝗞𝗜𝗡𝗚 𝗪𝗔𝗟𝗟𝗘𝗧 𝗔𝗖𝗖𝗘𝗦𝗦 𝗦𝗜𝗠𝗣𝗟𝗘𝗥 𝗔𝗡𝗗 𝗦𝗠𝗔𝗥𝗧𝗘𝗥\n\nWhat if accessing a blockchain wallet felt as simple as unlocking your smartphone?\nWeb3 adoption depends not only on powerful technology but also on a smooth user experience.\nTRON is exploring passkey-enabled smart wallets to make authentication more familiar, convenient, and accessible.\n\n1️⃣ 𝗛𝗼𝘄 𝗣𝗮𝘀𝘀𝗸𝗲𝘆 𝗧𝗲𝗰𝗵𝗻𝗼𝗹𝗼𝗴𝘆 𝗪𝗼𝗿𝗸𝘀\n\nTRON DAO's technical guide, Signing TRON Transactions With a Passkey, introduces a way to authorize wallet activity using device-supported authentication.\n\n🔹 Familiar Authentication: Users can authenticate through supported methods such as Face ID, Touch ID, or fingerprint recognition.\n\n🔹 P256VERIFY Precompile: TRON provides the P256VERIFY precompile at address 0x100 to verify P-256 signatures on-chain.\n\n🔹 Bridging Cryptographic Differences: Traditional TRON accounts use secp256k1, while modern device passkeys commonly rely on P-256 cryptography.\n\n🔹 Smart Wallet Verification: P256VERIFY allows smart contracts to verify signatures generated through supported passkey authentication.\n\n🔹 Simpler User Experience: This approach can reduce dependence on manually managing seed phrases during everyday wallet interactions.\n\n2️⃣ 𝗦𝗲𝗰𝘂𝗿𝗶𝘁𝘆 𝗚𝗼𝗲𝘀 𝗕𝗲𝘆𝗼𝗻𝗱 𝗕𝗶𝗼𝗺𝗲𝘁𝗿𝗶𝗰𝘀\n\nOne important technical detail is that verifying a signature does not automatically prove that the user approved the intended transaction. The operation digest must be securely connected to the WebAuthn challenge. The wallet also includes its address and chain ID in the digest, helping prevent signatures from being replayed across different wallets or networks. This distinction matters because authentication confirms control of a credential, while secure challenge binding connects that authentication to a specific operation. Strong implementation must protect both parts.\n\n3️⃣ 𝗙𝗿𝗼𝗺 𝗗𝗲𝘃𝗲𝗹𝗼𝗽𝗺𝗲𝗻𝘁 𝗧𝗼 𝗥𝗲𝗮𝗹-𝗪𝗼𝗿𝗹𝗱 𝗪𝗮𝗹𝗹𝗲𝘁𝘀\n\nThe reference implementation demonstrates how developers can explore this technology across different platforms. It includes a Next.js application for passkey registration and signing, a P256SmartWallet smart contract deployed on the Nile testnet, and native iOS and Android applications supporting passkey authentication.\n\nThe guide also highlights important production requirements, including account recovery, credential management, domain selection, and transaction fee abstraction. Passkeys are not a complete replacement for every wallet security or recovery mechanism, but they offer a promising way to reduce onboarding friction.\n\nThe bigger vision is to make Web3 feel more natural without overlooking security. By combining cryptographic verification with familiar device authentication, TRON is giving developers another tool to build accessible smart-wallet experiences.\n\nBetter accessibility, thoughtful security, and a smoother path into Web3.\n\nExplore: https://t.co/8I9SOaUvb1\n\n@trondao @justinsuntron\n\n#TRONEcoStar",
+                "url": "https://x.com/Crypto_X3ViiiL/status/2118620882738589700",
+                "source": "@Crypto_X3ViiiL",
+                "date": "Fri Nov 06 08:25:55 +0000 2026",
+                "metrics": {
+                  "favorites": 2,
+                  "retweets": 0,
+                  "views": "74"
+                }
+              },
+              {
+                "title": "Hardware-backed authentication is gaining momentum as passkey adoption grows in 2026. By reducing reliance on traditiona",
+                "summary": "Hardware-backed authentication is gaining momentum as passkey adoption grows in 2026. By reducing reliance on traditional passwords, the technology could strengthen account security, limit phishing risks, and simplify digital sign-ins.\n\nRead more: https://t.co/ptpimc9Ysu\n\nFollow TechAmerica for more updates.",
+                "url": "https://x.com/techamericaofcl/status/2118040449453527233",
+                "source": "@techamericaofcl",
+                "date": "Wed Nov 04 17:59:29 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 0,
+                  "views": "9"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G04_missing_platform",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Thiếu nền tảng tìm kiếm và có yêu cầu hỏi trước: không tự chọn Hacker News, X hoặc web."
+      },
+      "input": "Tìm các bài đăng về \"database reliability\" trên nền tảng tôi đã chọn nhé. Tôi chưa nói tên nền tảng trong cuộc trò chuyện này, hãy hỏi lại tôi trước khi tìm.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {}
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn muốn tìm các bài đăng về \"database reliability\" trên nền tảng nào?",
+              "response_type": "choice",
+              "options": [
+                "X / Twitter",
+                "Hacker News"
+              ]
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn muốn tìm các bài đăng về \"database reliability\" trên nền tảng nào?",
+            "response_type": "choice",
+            "options": [
+              "X / Twitter",
+              "Hacker News"
+            ]
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn muốn tìm các bài đăng về \"database reliability\" trên nền tảng nào?",
+            "response_type": "choice",
+            "options": [
+              "X / Twitter",
+              "Hacker News"
+            ],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G05_unsupported_calendar",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Không gọi công cụ research hoặc Telegram để giả lập đặt lịch khi không có công cụ lịch; kiểm tra thủ công câu trả lời có nói rõ giới hạn."
+      },
+      "input": "Tạo ngay một sự kiện trong Google Calendar của tôi tên \"Họp nhóm lab\", lúc 09:00 ngày mai, kéo dài 30 phút. Tôi chỉ cần đặt lịch, không cần tìm thông tin.",
+      "expect": {
+        "no_tool": true
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Tôi rất tiếc nhưng tôi không có công cụ kết nối hoặc truy cập vào Google Calendar của bạn để tạo hay quản lý lịch trình. \n\nBạn có thể tạo thủ công sự kiện này trên ứng dụng Google Calendar với các thông tin:\n- **Tên sự kiện:** Họp nhóm lab\n- **Thời gian:** 09:00 - 09:30 (ngày mai)\n\nNếu bạn cần hỗ trợ tìm kiếm thông tin, tổng hợp tin tức hay tài liệu nghiên cứu, đừng ngần ngại cho tôi biết nhé!",
+        "case_failure_type": "out_of_scope",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G06_hn_query_limit_correction",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Cập nhật cả chủ đề và số lượng qua nhiều lượt, vẫn dùng Hacker News; không chấm sort."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm 6 bài trên Hacker News với từ khóa \"PostgreSQL\"."
+        },
+        {
+          "role": "user",
+          "content": "Đổi từ khóa thành \"SQLite\", giữ nguyên cách sắp xếp."
+        },
+        {
+          "role": "user",
+          "content": "Lấy 2 bài thôi, dùng đúng từ khóa mới đã chọn."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "hn_search",
+            "args": {
+              "query": "SQLite",
+              "limit": 2
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "hn_search",
+            "args": {
+              "limit": 2,
+              "sort": "relevance",
+              "query": "SQLite"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "hn_search",
+          "args": {
+            "limit": 2,
+            "sort": "relevance",
+            "query": "SQLite"
+          },
+          "result": {
+            "tool": "hn_search",
+            "query": "SQLite",
+            "sort": "relevance",
+            "items": [
+              {
+                "title": "Hosting SQLite databases on GitHub Pages or any static file hoster",
+                "url": "https://phiresky.github.io/blog/2021/hosting-sqlite-databases-on-github-pages/",
+                "source": "phiresky.github.io",
+                "score": 1812,
+                "hn_id": "27016630",
+                "hn_url": "https://news.ycombinator.com/item?id=27016630",
+                "summary": "1812 points by phiresky, 244 comments"
+              },
+              {
+                "title": "I'm all-in on server-side SQLite",
+                "url": "https://fly.io/blog/all-in-on-sqlite-litestream/",
+                "source": "fly.io",
+                "score": 1353,
+                "hn_id": "31318708",
+                "hn_url": "https://news.ycombinator.com/item?id=31318708",
+                "summary": "1353 points by dpeck, 404 comments"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_hn_to_web_month",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Đổi nguồn từ Hacker News sang web và mang theo chủ đề, timeframe, số lượng mới."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm 5 bài trên Hacker News về \"WebAssembly\"."
+        },
+        {
+          "role": "user",
+          "content": "Chuyển sang tin tức trên web trong tháng qua, không tìm Hacker News nữa."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ lấy 2 kết quả; giữ nguyên từ khóa \"WebAssembly\" và khoảng thời gian vừa chọn."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "WebAssembly",
+              "topic": "news",
+              "timeframe": "month",
+              "max_results": 2
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "topic": "news",
+              "max_results": 2,
+              "timeframe": "month",
+              "query": "WebAssembly"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "topic": "news",
+            "max_results": 2,
+            "timeframe": "month",
+            "query": "WebAssembly"
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "WebAssembly",
+            "topic": "news",
+            "timeframe": "month",
+            "items": [
+              {
+                "title": "WebAssembly Didn’t Miss the Moment. AI Was Just Late.",
+                "url": "https://www.akamai.com/blog/edge/webassembly-didnt-miss-the-moment-ai-was-just-late",
+                "source": "akamai.com",
+                "summary": "# WebAssembly Didn’t Miss the Moment. AI Was Just Late.\n\nShare\n\nA few years ago, WebAssembly was the format that let a game engine or a design tool like Figma run in your browser at near-native speed. It was designed around one very specific problem: Run code that you didn't review, from a source you don't fully trust — safely, instantly, and anywhere.\n\nNow, think about what an AI agent does all day:\n\nIt writes a Python script to clean up a CSV. [...] It generates a function to call an API it found in the docs five seconds ago.\n\nIt tries something, fails, rewrites it, and tries again.\n\nThat’s code nobody reviewed, from a source nobody fully trusts, that needs to start instantly and run anywhere.\n\nSound familiar? The problem WebAssembly was built to solve is exactly the problem that agents just created.\n\nToday, we're making two things official. [...] Akamai Agent Sandbox building blocks headed to Spin, the open source framework under Akamai Functions\n\n## Why WebAssembly is a great fit for AI workloads\n\nWhere should agent-generated code run? It needs to be isolated, it needs to start fast, and it shouldn’t cost much to keep ready. Containers and VMs handle isolation well, but speed and cost are where they struggle.\n\nWebAssembly flips that trade-off. Four properties matter most for AI and agent workloads:",
+                "score": 0.78054583
+              },
+              {
+                "title": "What’s new in MLE 23.26.4: WebAssembly lands in Oracle AI Database | developers",
+                "url": "https://blogs.oracle.com/developers/whats-new-in-mle-23-26-4-webassembly-lands-in-oracle-ai-database",
+                "source": "blogs.oracle.com",
+                "summary": "With Release Update 23.26.4, it gains support for WebAssembly (Wasm) modules. The feature is available now on Autonomous Database, with other deployment options to follow shortly.\n\nWebAssembly is a portable binary format for code that can run in different environments. Programs written in languages such as C, Rust, and Go can be compiled to Wasm. Now, suitable Wasm libraries can run inside Oracle AI Database and be called from MLE JavaScript. [...] To use a library, you can store its Wasm binary as an MLE module and load its JavaScript bindings as a JavaScript module. Your JavaScript code imports the Wasm module and calls the library’s functions. Those functions can then form part of an application’s database logic.\n\nI’ll share more technical examples in the coming weeks. In the meantime, please head over to the MLE WebAssembly documentation. We also plan to update the MLE LiveLabs so you can try the feature without setting up anything! [...] What can you do with that? Image processing is one example: a Wasm library can resize an image stored in the database. Other tasks, such as optical character recognition, may also be possible with libraries whose Wasm modules and JavaScript bindings work in MLE.",
+                "score": 0.77137923
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G08_select_second_url",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Giải quyết tham chiếu link thứ hai trong hai URL; không gọi fetch cho cả hai."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tôi có hai link: https://docs.python.org/3/library/json.html và https://docs.python.org/3/library/csv.html ."
+        },
+        {
+          "role": "user",
+          "content": "Tôi đang quan tâm cách xử lý CSV."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ đọc và tóm tắt link thứ hai tôi đã gửi, bỏ link thứ nhất."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://docs.python.org/3/library/csv.html"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://docs.python.org/3/library/csv.html"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "fetch",
+          "args": {
+            "url": "https://docs.python.org/3/library/csv.html"
+          },
+          "result": {
+            "tool": "read_url",
+            "url": "https://docs.python.org/3/library/csv.html",
+            "items": [
+              {
+                "title": "csv — CSV file reading and writing — Python 3.15.2 documentation",
+                "url": "https://docs.python.org/3/library/csv.html",
+                "source": "docs.python.org",
+                "summary": "### Navigation\n\n- [index](https://docs.python.org/3/genindex.html \"General Index\")\n- [modules](https://docs.python.org/3/py-modindex.html \"Python Module Index\") \\|\n- [next](https://docs.python.org/3/library/configparser.html \"configparser — Configuration file parser\") \\|\n- [previous](https://docs.python.org/3/library/fileformats.html \"File Formats\") \\|\n- ![Python logo](https://docs.python.org/3/_static/py.svg)\n- [Python](https://www.python.org/) »\n- German \\| DeutschGreek \\| ΕλληνικάEnglishSpanish \\| españolPersian \\| فارسیFrench \\| françaisItalian \\| italianoJapanese \\| 日本語Korean \\| 한국어Punjabi \\| ਪੰਜਾਬੀPolish \\| polskiBrazilian Portuguese \\| Português brasileiroRomanian \\| RomâneșteRussian \\| РусскийTurkish \\| TürkçeSimplified Chinese \\| 简体中文Traditional Chinese \\| 繁體中文\n\ndev (3.16)3.15.23.143.133.123.113.103.93.83.73.63.53.43.33.23.13.02.72.6\n\n- [3.15.2 documentation](https://docs.python.org/3/index.html) »\n\n- [The Python standard library](https://docs.python.org/3/library/index.html) »\n- [File Formats](https://docs.python.org/3/library/fileformats.html) »\n- [`csv` — CSV file reading and writing](https://docs.python.org/3/library/csv.html)\n- \\|\n\n- Theme\nAutoLightDark \\|\n\n# `csv` — CSV file reading and writing [¶](https://docs.python.org/3/library/csv.html\\#module-csv \"Link to this heading\")\n\n**Source code:** [Lib/csv.py](https://github.com/python/cpython/tree/3.15/Lib/csv.py)\n\n* * *\n\nThe so-called CSV (Comma Separated Values) format is the most common import and\nexport format for spreadsheets and databases. CSV format was used for many\nyears prior to attempts to describe the format in a standardized way in\n[**RFC 4180**](https://datatracker.ietf.org/doc/html/rfc4180.html). The lack of a well-defined standard means that subtle differences\noften exist in the data produced and consumed by different applications. These\ndifferences can make it annoying to process CSV files from multiple sources.\nStill, while the delimiters and quoting characters vary, the overall format is\nsimilar enough that it is possible to write a single module which can\nefficiently manipulate such data, hiding the details of reading and writing the\ndata from the programmer.\n\nThe `csv` module implements classes to read and write tabular data in CSV\nformat. It allows programmers to say, “write this data in the format preferred\nby Excel,” or “read data from this file which was generated by Excel,” without\nknowing the precise details of the CSV format used by Excel. Programmers can\nalso describe the CSV formats understood by other applications or define their\nown special-purpose CSV formats.\n\nThe `csv` module’s [`reader`](https://docs.python.org/3/library/csv.html#csv.reader \"csv.reader\") and [`writer`](https://docs.python.org/3/library/csv.html#csv.writer \"csv.writer\") objects read and\nwrite sequences. Programmers can also read and write data in dictionary form\nusing the [`DictReader`](https://docs.python.org/3/library/csv.html#csv.DictReader \"csv.DictReader\") and [`DictWriter`](https://docs.python.org/3/library/csv.html#csv.DictWriter \"csv.DictWriter\") classes.\n\nSee also\n\n[**PEP 305**](https://peps.python.org/pep-0305/) \\- CSV File API\n\nThe Python Enhancement Proposal which proposed this addition to Python.\n\n## Module contents [¶](https://docs.python.org/3/library/csv.html\\#module-contents \"Link to this heading\")\n\nThe `csv` module defines the following functions:\n\ncsv.reader( _csvfile_, _/_, _dialect='excel'_, _\\*\\*fmtparams_) [¶](https://docs.python.org/3/library/csv.html#csv.reader \"Link to this definition\")\n\nReturn a [reader object](https://docs.python.org/3/library/csv.html#reader-objects) that will process\nlines from the given _csvfile_. A csvfile must be an iterable of\nstrings, each in the reader’s defined csv format.\nA csvfile is most commonly a file-like object or list.\nIf _csvfile_ is a file object,\nit should be opened with `newline=''`. [\\[1\\]](https://docs.python.org/3/library/csv.html#id4) An optional\n_dialect_ parameter can be given which is used to"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G09_cancel_telegram",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Tôn trọng việc hủy yêu cầu gửi ở lượt mới nhất; không gọi send hoặc clarify. Case không yêu cầu gửi thật."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Nội dung dự thảo: \"Nhóm sẽ demo agent vào chiều mai.\" Tôi muốn đăng lên Telegram nhưng chưa xác nhận gửi."
+        },
+        {
+          "role": "user",
+          "content": "Tôi đổi ý, hủy yêu cầu đăng."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ xác nhận bằng lời rằng đã hủy. Không gửi, không tìm kiếm và không hỏi xác nhận gửi nữa."
+        }
+      ],
+      "expect": {
+        "no_tool": true
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Đã hủy yêu cầu đăng tin lên Telegram theo ý của bạn.",
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G10_format_template_correction",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Nhớ dữ liệu đã có, cập nhật template bullets thành thread và tiêu đề; đọc thủ công args.items để xác minh dữ liệu."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Dữ liệu có sẵn: [{\"title\":\"Eval checklist\",\"url\":\"https://example.org/eval-checklist\",\"source\":\"Team notes\",\"summary\":\"Kiểm tra routing và tham số.\"}]. Hãy dùng dữ liệu này để tạo danh sách gạch đầu dòng."
+        },
+        {
+          "role": "user",
+          "content": "Đổi cách trình bày thành chuỗi bài đánh số, tức template thread."
+        },
+        {
+          "role": "user",
+          "content": "Đặt tiêu đề \"Nhật ký kiểm thử\", giữ kiểu trình bày vừa sửa và dữ liệu ban đầu; không tìm thêm nguồn."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "format",
+            "args": {
+              "template": "thread",
+              "headline": "Nhật ký kiểm thử"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "format",
+            "args": {
+              "headline": "Nhật ký kiểm thử",
+              "items": [
+                {
+                  "summary": "Kiểm tra routing và tham số.",
+                  "title": "Eval checklist",
+                  "source": "Team notes",
+                  "url": "https://example.org/eval-checklist"
+                }
+              ],
+              "template": "thread"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "format",
+          "args": {
+            "headline": "Nhật ký kiểm thử",
+            "items": [
+              {
+                "summary": "Kiểm tra routing và tham số.",
+                "title": "Eval checklist",
+                "source": "Team notes",
+                "url": "https://example.org/eval-checklist"
+              }
+            ],
+            "template": "thread"
+          },
+          "result": {
+            "tool": "render_digest",
+            "template": "thread",
+            "markdown": "1/ Kiểm tra routing và tham số. - [Team notes](https://example.org/eval-checklist)",
+            "item_count": 1
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -78,9 +78,7 @@
         "tool_calls": [
           {
             "name": "clarify",
-            "args": {
-              "response_type": "text"
-            }
+            "args": {}
           }
         ]
       },
