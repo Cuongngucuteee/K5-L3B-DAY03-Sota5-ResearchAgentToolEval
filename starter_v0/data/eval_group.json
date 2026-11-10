@@ -3,5 +3,266 @@
   "dataset_role": "group",
   "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_hn_topic_and_limit",
+      "phase": "B",
+      "suite": "group",
+      "query": "Tìm 4 bài trên Hacker News về cụm từ \"supply chain security\". Giữ nguyên cụm từ này khi tìm kiếm.",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "hn_search",
+            "args": {
+              "query": "supply chain security",
+              "limit": 4
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Chọn công cụ Hacker News, truyền đúng cụm từ và số lượng; không chấm sort vì chưa có enum chính thức của nhóm."
+      }
+    },
+    {
+      "id": "G02_format_existing_items",
+      "phase": "B",
+      "suite": "group",
+      "query": "Tôi đã có dữ liệu sau, không cần tìm thêm: [{\"title\":\"Lab update\",\"url\":\"https://example.org/lab-update\",\"source\":\"Team notes\",\"summary\":\"Nhóm đã bổ sung bài kiểm tra.\"}]. Hãy trình bày thành danh sách gạch đầu dòng với tiêu đề \"Ghi chú nhóm\".",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "format",
+            "args": {
+              "template": "bullets",
+              "headline": "Ghi chú nhóm"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Dùng dữ liệu được cung cấp để định dạng, không gọi công cụ tìm kiếm; cần đọc thủ công args.items để kiểm tra dữ liệu được giữ nguyên."
+      }
+    },
+    {
+      "id": "G03_social_latest_limit",
+      "phase": "B",
+      "suite": "group",
+      "query": "Tìm 4 bài đăng mới nhất trên X chứa cụm từ \"passkey adoption\"; giữ nguyên cụm từ tìm kiếm, ưu tiên mới nhất chứ không phải phổ biến nhất.",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "passkey adoption",
+              "search_type": "Latest",
+              "limit": 4
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Kiểm tra đồng thời query, Latest và limit; phân biệt bài mới nhất với bài top."
+      }
+    },
+    {
+      "id": "G04_missing_platform",
+      "phase": "B",
+      "suite": "group",
+      "query": "Tìm các bài đăng về \"database reliability\" trên nền tảng tôi đã chọn nhé. Tôi chưa nói tên nền tảng trong cuộc trò chuyện này, hãy hỏi lại tôi trước khi tìm.",
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Thiếu nền tảng tìm kiếm và có yêu cầu hỏi trước: không tự chọn Hacker News, X hoặc web."
+      }
+    },
+    {
+      "id": "G05_unsupported_calendar",
+      "phase": "B",
+      "suite": "group",
+      "query": "Tạo ngay một sự kiện trong Google Calendar của tôi tên \"Họp nhóm lab\", lúc 09:00 ngày mai, kéo dài 30 phút. Tôi chỉ cần đặt lịch, không cần tìm thông tin.",
+      "failure_type": "out_of_scope",
+      "expect": {
+        "no_tool": true
+      },
+      "metadata": {
+        "what_it_tests": "Không gọi công cụ research hoặc Telegram để giả lập đặt lịch khi không có công cụ lịch; kiểm tra thủ công câu trả lời có nói rõ giới hạn."
+      }
+    },
+    {
+      "id": "G06_hn_query_limit_correction",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tìm 6 bài trên Hacker News với từ khóa \"PostgreSQL\"."
+        },
+        {
+          "role": "user",
+          "content": "Đổi từ khóa thành \"SQLite\", giữ nguyên cách sắp xếp."
+        },
+        {
+          "role": "user",
+          "content": "Lấy 2 bài thôi, dùng đúng từ khóa mới đã chọn."
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "hn_search",
+            "args": {
+              "query": "SQLite",
+              "limit": 2
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Cập nhật cả chủ đề và số lượng qua nhiều lượt, vẫn dùng Hacker News; không chấm sort."
+      }
+    },
+    {
+      "id": "G07_hn_to_web_month",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tìm 5 bài trên Hacker News về \"WebAssembly\"."
+        },
+        {
+          "role": "user",
+          "content": "Chuyển sang tin tức trên web trong tháng qua, không tìm Hacker News nữa."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ lấy 2 kết quả; giữ nguyên từ khóa \"WebAssembly\" và khoảng thời gian vừa chọn."
+        }
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "WebAssembly",
+              "topic": "news",
+              "timeframe": "month",
+              "max_results": 2
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Đổi nguồn từ Hacker News sang web và mang theo chủ đề, timeframe, số lượng mới."
+      }
+    },
+    {
+      "id": "G08_select_second_url",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tôi có hai link: https://docs.python.org/3/library/json.html và https://docs.python.org/3/library/csv.html ."
+        },
+        {
+          "role": "user",
+          "content": "Tôi đang quan tâm cách xử lý CSV."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ đọc và tóm tắt link thứ hai tôi đã gửi, bỏ link thứ nhất."
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://docs.python.org/3/library/csv.html"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Giải quyết tham chiếu link thứ hai trong hai URL; không gọi fetch cho cả hai."
+      }
+    },
+    {
+      "id": "G09_cancel_telegram",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Nội dung dự thảo: \"Nhóm sẽ demo agent vào chiều mai.\" Tôi muốn đăng lên Telegram nhưng chưa xác nhận gửi."
+        },
+        {
+          "role": "user",
+          "content": "Tôi đổi ý, hủy yêu cầu đăng."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ xác nhận bằng lời rằng đã hủy. Không gửi, không tìm kiếm và không hỏi xác nhận gửi nữa."
+        }
+      ],
+      "failure_type": "wrong_boundary",
+      "expect": {
+        "no_tool": true
+      },
+      "metadata": {
+        "what_it_tests": "Tôn trọng việc hủy yêu cầu gửi ở lượt mới nhất; không gọi send hoặc clarify. Case không yêu cầu gửi thật."
+      }
+    },
+    {
+      "id": "G10_format_template_correction",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Dữ liệu có sẵn: [{\"title\":\"Eval checklist\",\"url\":\"https://example.org/eval-checklist\",\"source\":\"Team notes\",\"summary\":\"Kiểm tra routing và tham số.\"}]. Hãy dùng dữ liệu này để tạo danh sách gạch đầu dòng."
+        },
+        {
+          "role": "user",
+          "content": "Đổi cách trình bày thành chuỗi bài đánh số, tức template thread."
+        },
+        {
+          "role": "user",
+          "content": "Đặt tiêu đề \"Nhật ký kiểm thử\", giữ kiểu trình bày vừa sửa và dữ liệu ban đầu; không tìm thêm nguồn."
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "format",
+            "args": {
+              "template": "thread",
+              "headline": "Nhật ký kiểm thử"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Nhớ dữ liệu đã có, cập nhật template bullets thành thread và tiêu đề; đọc thủ công args.items để xác minh dữ liệu."
+      }
+    }
+  ]
 }
