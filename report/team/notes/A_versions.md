@@ -34,8 +34,5 @@ Nhận xét: v1 **làm tệ hơn** v0 (0.65 → 0.45) — đây là kết quả 
 | R12_confirm_before_send | wrong_boundary | `clarify(response_type=text)` hỏi nội dung bản tin, expected `yes_no` | user chưa đưa nội dung nên model hỏi nội dung, chưa chuyển sang xác nhận |
 | R13_parallel_web_and_tweets | wrong_tool | `lookup(query="AI news")`, expected `AI` | convention `query` chưa đủ mạnh trong ca song song |
 
-## Ghi chú về `hn_search`
-Sau khi chạy v3, A cập nhật riêng mô tả `hn_search` trong `tools.yaml` theo nội dung C gửi (không đổi tool nào khác). Vì vậy `tools_hash` của file cuối (`c0e6f014aa3b`) khác `tools_hash` ghi trong run v3 (`21ecbe9244ad`); phần khác biệt chỉ là mô tả `hn_search`. Một lần chạy kiểm tra sau thay đổi này cho cùng metric tổng (case_acc 0.85) nhưng không đưa vào log; nó cho thấy model dao động giữa các lần chạy dù `temperature=0` (R13 đạt, R03 lỗi, ngược với v3), nên chênh 1 case (0.05) không nên coi là cải thiện hay tụt thật.
-
 ## Việc còn tồn
 - 3 case còn lỗi ở v3 (R11, R12, R13) có thể xử lý nếu cần thêm một vòng (ngoài yêu cầu tối thiểu v1–v3).
