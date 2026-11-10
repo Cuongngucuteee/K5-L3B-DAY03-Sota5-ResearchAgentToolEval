@@ -14,7 +14,7 @@ import streamlit as st
 from agent import ResearchAgent
 from providers import make_provider
 from run_eval import (
-    ROOT, DATA_DIR, load_cases, load_dataset_info, print_table, run_case,
+    ROOT, DATA_DIR, case_messages, evaluate_phase_b, load_cases, load_dataset_info, print_table,
     summarize, validate_expected_tools,
 )
 from tools import load_tool_declarations, to_openai_tools
@@ -31,8 +31,48 @@ def safe_error(exc: Exception) -> str:
     return message
 
 
+def run_case(
+    case: dict, *, provider, system_prompt: str,
+    tools: list[dict], model: str | None = None, suite: str = "base",
+) -> dict:
+    """Run one UI eval case using the same steps and output schema as the CLI."""
+    agent = ResearchAgent(provider, system_prompt=system_prompt, tools=tools, model=model)
+    try:
+        tool_choice = None if case["expect"].get("no_tool") else "required"
+        run = agent.run(case_messages(case), tool_choice=tool_choice)
+        calls = [{"name": call.name, "args": call.args} for call in run.tool_calls]
+        result = evaluate_phase_b(case, calls, run.text)
+        tool_results = run.tool_results
+    except Exception as exc:
+        calls = []
+        tool_results = []
+        result = {
+            "passed": False,
+            "failure_type": "provider_error",
+            "case_failure_type": case.get("failure_type"),
+            "observed_mismatch": "provider_error",
+            "failures": [f"{type(exc).__name__}: {str(exc)}"],
+            "actual_tool_calls": [],
+            "actual_text": None,
+            "routing_correct": False,
+            "args_correct": False,
+        }
+    return {
+        "id": case["id"],
+        "phase": case["phase"],
+        "suite": suite,
+        "case_suite": case.get("suite", suite),
+        "is_multiturn": "turns" in case,
+        "metadata": case.get("metadata", {}),
+        "input": case.get("input") or case.get("query") or case.get("turns"),
+        "expect": case["expect"],
+        "result": result,
+        "tool_results": tool_results,
+    }
+
+
 def run_cases(dataset: Path, cases: list[dict]) -> None:
-    """Use the CLI's case runner and summary; never chain model responses."""
+    """Run UI cases once each and reuse the CLI scoring and summary helpers."""
     prompt_path = ROOT / "artifacts/system_prompt.md"
     tools_path = ROOT / "artifacts/tools.yaml"
     prompt = prompt_path.read_text(encoding="utf-8")
