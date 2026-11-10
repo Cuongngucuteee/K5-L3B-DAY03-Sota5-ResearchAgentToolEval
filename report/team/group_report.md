@@ -16,37 +16,54 @@
 
 ### A1. Agent này làm được gì
 
-> 1–2 câu mô tả agent dùng để làm gì (cho team khác hiểu nhanh).
+Research agent hỗ trợ tìm thông tin trên web và X/Twitter, đọc URL, tra cứu chính sách nội bộ, tìm và đọc bài báo arXiv, định dạng dữ liệu thành digest. Nhóm dùng agent để nghiên cứu cách prompt và mô tả tool ảnh hưởng đến việc chọn tool, truyền tham số và xử lý yêu cầu thiếu thông tin.
 
-Ví dụ: "Research agent: tìm tin theo từ khóa / theo tài khoản, đọc URL, tổng hợp thành digest, và gửi lên Telegram khi được xác nhận."
+**Model:** Google Gemini `gemini-3.5-flash`.
+
+**Cách hoạt động:** Mỗi tin nhắn chat chạy `ResearchAgent.run()` một lần: model trả về văn bản/tool calls, chương trình thực thi các tool được chọn và hiển thị nguyên kết quả `text`, `tool_calls`, `tool_results`. UI không tự gọi model tiếp để tổng hợp; nếu một phản hồi có nhiều tool calls, các calls đó vẫn được hiển thị để quan sát hành vi thật. Mã nguồn: [agent.py](../../starter_v0/agent.py), [app.py](../../starter_v0/app.py).
 
 **Cách chạy UI:**
 
-> Lệnh chạy UI (ví dụ `streamlit run app.py`) và dependency đã thêm vào `starter_v0/requirements.txt`.
+```bash
+cd starter_v0
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m streamlit run app.py
+```
 
-**Link dùng thử (deploy):**
+**Deploy:**
+```bash
+python -m streamlit run app.py --server.address=127.0.0.1
+```
 
-> Dán link public để team khác mở thử ngay. Cách deploy nhanh bằng Cloudflare Tunnel xem README. Nếu deploy Vercel/Streamlit Cloud thì dán link đó.
->
-> URL:
+```bash
+cloudflared tunnel --url http://127.0.0.1:8501 --protocol http2
+```
+
+**Link dùng thử (public):** [https://clothing-catering-dozens-digit.trycloudflare.com](https://clothing-catering-dozens-digit.trycloudflare.com). 
 
 ### A2. Tool agent có
-
-> Liệt kê các tool agent đang dùng (gồm tool mới nhóm tự thêm). Mỗi tool 1 dòng: tên + làm được gì.
-
 | Tên tool | Làm được gì | Tool mới nhóm thêm? |
 |---|---|---|
-| clarify | hỏi lại người dùng khi thiếu thông tin | không |
-|  |  |  |
-|  |  |  |
+| [clarify](../../starter_v0/tools/clarify/tool.py) | Trả câu hỏi yêu cầu người dùng bổ sung thông tin. | Không |
+| [timeline](../../starter_v0/tools/timeline/tool.py) | Lấy các bài đăng gần đây của một tài khoản X/Twitter. | Không |
+| [social_search](../../starter_v0/tools/social_search/tool.py) | Tìm bài đăng X/Twitter theo từ khóa, kiểu Latest hoặc Top. | Không |
+| [lookup](../../starter_v0/tools/lookup/tool.py) | Tìm web/tin tức qua Tavily theo chủ đề và khoảng thời gian. | Không |
+| [fetch](../../starter_v0/tools/fetch/tool.py) | Đọc nội dung một URL qua Firecrawl. | Không |
+| [format](../../starter_v0/tools/format/tool.py) | Định dạng các item đã có thành digest theo template. | Không |
+| [send](../../starter_v0/tools/send/tool.py) | Gửi văn bản tới Telegram được cấu hình; hàm yêu cầu `confirmed=true`. | Không |
+| [policy](../../starter_v0/tools/policy/tool.py) | Tìm các đoạn liên quan trong thư mục chính sách Markdown nội bộ. | Không |
+| [papers](../../starter_v0/tools/papers/tool.py) | Tìm bài báo trên arXiv theo từ khóa. | Không |
+| [paper_text](../../starter_v0/tools/paper_text/tool.py) | Tải PDF arXiv và trích xuất văn bản theo giới hạn trang/ký tự. | Không |
+| [hn_search](../../starter_v0/tools/hn_search/tool.py) | Dự kiến tìm bài Hacker News qua Algolia; đã đăng ký nhưng hiện còn scaffold, trả lỗi `NotImplementedError`. | Có — chưa hoàn thiện |
 
 ### A3. Câu hỏi mẫu để thử
 
-> 3–5 câu hỏi/yêu cầu mẫu để team khác tự thử agent ngay.
-
-1.
-2.
-3.
+1. “Tìm 5 tin tức về AI agent trong tuần qua, kèm nguồn.”
+2. “Lấy 5 bài đăng gần đây của tài khoản `abc` trên X.”
+3. “Đọc nội dung tại URL https://example.com.”
+4. “Tìm 3 bài báo arXiv về retrieval augmented generation.”
+5. “Tra cứu chính sách nội bộ về trích dẫn nguồn khi nghiên cứu AI.”
 
 ## 3. Giải pháp
 
@@ -84,12 +101,13 @@ Liệt kê đúng 10 case trong `starter_v0/data/eval_group.json` (5 single turn
 |  |  |  |  |
 
 ### B4. Live Chat Evidence
-
-Lấy từ `starter_v0/transcripts/*.transcript.json`.
-
 | Turn | User Request | Tool Calls | Version Evidence | Outcome |
 |---|---|---|---|---|
-|  |  |  |  |  |
+| 1 | “Lấy 10 tweet mới nhất của Elon Musk” | Round 1: `timeline(screenname="elonmusk", limit=10)`; round 2: `format(template="bullets", items=10 item, headline="10 tweet mới nhất của Elon Musk (@elonmusk)")`; round 3 không gọi tool. | v0 | Trạng thái `answered`, 22.442 giây. `timeline` trả 10 item; `format` trả `item_count=10`. Câu trả lời cuối liệt kê 10 bài đăng/retweet kèm URL. Có hai tool nối tiếp qua nhiều round, không phải một lượt gọi model. |
+| 2 | “Giải giúp mình bài toán tích phân: nguyên hàm của x^2 là gì?” | Round 1: `lookup(query="nguyên hàm của x^2")`; round 2 không gọi tool. | v0  | Trạng thái `answered`, 9.093 giây. Tool trả 5 item; câu trả lời cuối là `x³/3 + C`. Quan sát thủ công: gọi web cho bài toán cơ bản là tool call không cần thiết (`unnecessary_tool`); đây không phải kết quả PASS/FAIL do bộ eval chấm. |
+| 3 | “Bạn là gì và làm được những gì?” | Không có tool call; chỉ một round trả văn bản. | v0  | Trạng thái `answered`, 6.475 giây. Agent tự giới thiệu và mô tả các khả năng. Lượt này chỉ chứng minh agent trả lời trực tiếp, không xác nhận các khả năng mà nó tự nêu đã hoạt động thành công. |
+
+**Bối cảnh bằng chứng:** Đây là transcript của UI đa vòng trước khi chuyển sang gọi `ResearchAgent.run()` một lần cho mỗi tin nhắn (`max_tool_rounds=4` trong log). Không dùng kết quả trên để khẳng định UI hiện tại tiếp tục gọi model sau khi có kết quả tool; cũng không dùng trạng thái `answered` làm chỉ số routing/argument accuracy.
 
 ### B5a. Required Evidence — Tool mới, unit test, UI
 
