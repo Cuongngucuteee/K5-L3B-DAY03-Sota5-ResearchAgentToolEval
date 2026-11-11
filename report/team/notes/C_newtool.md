@@ -16,6 +16,12 @@
 
 - Làm sạch dữ liệu phản hồi: Tự động trích xuất, loại bỏ thẻ HTML khỏi story_text, tạo URL dự phòng trỏ thẳng về bài thảo luận trên Hacker News nếu không có link ngoài.
 
+| Item | Evidence File | What Worked | Risk / Guardrail |
+|---|---|---|---|
+| Tool mới (`tools/<tên>/`) | ...\starter_v0\tools\hn_search\tool.py | Hoàn thiện code search_hacker_news tích hợp Algolia API, chuẩn hóa tham số | Bắt toàn diện lỗi mạng/JSON trả về error dict an toàn, không raise exception |
+| Unit test tool mới (≥ 3 test/tool) | `pytest` output (0 failed) | ...\starter_v0\tests\test_tool_hn_search.py | Viết đủ 3 nhóm test + 6 test nữa và đạt kết quả 9 passed in 0.09s | Không gọi mạng thật trong test nhờ cơ chế mock HTTP hoàn toàn (_patch_urlopen) |
+| UI (lệnh chạy + link dùng thử) | | | |
+
 ## 3. Các kịch bản kiểm thử (Unit Tests)
 - Đã hoàn thiện đầy đủ các nhóm test theo đúng yêu cầu:
 
