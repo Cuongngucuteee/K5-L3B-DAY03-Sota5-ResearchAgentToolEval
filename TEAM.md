@@ -7,7 +7,7 @@
 - Repo nhóm: `K5-L3B-DAY03-Sota5-ResearchAgentToolEval`
 - URL repo: https://github.com/Cuongngucuteee/K5-L3B-DAY03-Sota5-ResearchAgentToolEval
 - Nhánh nộp: `main`
-- Commit chốt: _(điền hash commit cuối cùng sau khi push)_
+- Commit chốt: `d42f801`
 
 ## Thành viên
 
