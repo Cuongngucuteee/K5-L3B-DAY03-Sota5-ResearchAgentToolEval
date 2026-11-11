@@ -1,4 +1,4 @@
-# Báo cáo cá nhân — HoVaTen-MSSV
+# Báo cáo cá nhân — Nguyễn Long Vũ - 2A202603842
 
 ## 1. Thông tin thành viên
 

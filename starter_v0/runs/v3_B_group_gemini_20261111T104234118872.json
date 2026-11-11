@@ -1,0 +1,669 @@
+{
+  "run_id": "v3_B_group_gemini_20261111T104234118872",
+  "version": "v3",
+  "artifact_version": "v3+p761e9e9edc38+tc0e6f014aa3b",
+  "prompt_hash": "761e9e9edc3855a77f892abdabf0910a06a202ec23221bf43f06947fa4513292",
+  "tools_hash": "c0e6f014aa3b243a0310979061a2a156b0daf4e2ead3d809997dbb4346f3e4c8",
+  "phase": "B",
+  "suite": "group",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "system_prompt": "/Users/manhcuong/Desktop/work/Vin_AI/K5-L3B-DAY03-Sota5-ResearchAgentToolEval/starter_v0/artifacts/system_prompt.md",
+  "tools": "/Users/manhcuong/Desktop/work/Vin_AI/K5-L3B-DAY03-Sota5-ResearchAgentToolEval/starter_v0/artifacts/tools.yaml",
+  "eval_cases": "data/eval_group.json",
+  "dataset_id": "day03_v2_research_group",
+  "dataset_role": "group",
+  "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
+  "generated_at": "2026-11-11T10:42:34",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 10,
+    "provider_error_cases": 0,
+    "passed_cases": 9,
+    "case_accuracy": 0.9,
+    "tool_routing_accuracy": 0.9,
+    "argument_accuracy": 0.9,
+    "multiturn_accuracy": 1.0,
+    "failure_counts": {
+      "wrong_tool": 1
+    },
+    "observed_mismatch_counts": {
+      "missing_tool_call": 1
+    }
+  },
+  "results": [
+    {
+      "id": "G01_hn_topic_and_limit",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Chọn công cụ Hacker News, truyền đúng cụm từ và số lượng; không chấm sort vì chưa có enum chính thức của nhóm."
+      },
+      "input": "Tìm 4 bài trên Hacker News về cụm từ \"supply chain security\". Giữ nguyên cụm từ này khi tìm kiếm.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "hn_search",
+            "args": {
+              "query": "supply chain security",
+              "limit": 4
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "hn_search",
+            "args": {
+              "query": "supply chain security",
+              "limit": 4
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "hn_search",
+          "args": {
+            "query": "supply chain security",
+            "limit": 4
+          },
+          "result": {
+            "tool": "hn_search",
+            "query": "supply chain security",
+            "sort": "relevance",
+            "items": [
+              {
+                "title": "Bringing supply chain security features to the Go community",
+                "url": "https://github.blog/2021-07-22-github-supply-chain-security-features-go-community/",
+                "source": "github.blog",
+                "score": 183,
+                "hn_id": "27928464",
+                "hn_url": "https://news.ycombinator.com/item?id=27928464",
+                "summary": "183 points by lmas, 71 comments"
+              },
+              {
+                "title": "Fifty Years of Open Source Software Supply Chain Security",
+                "url": "https://queue.acm.org/detail.cfm?id=3722542",
+                "source": "queue.acm.org",
+                "score": 182,
+                "hn_id": "43614199",
+                "hn_url": "https://news.ycombinator.com/item?id=43614199",
+                "summary": "182 points by yarapavan, 83 comments"
+              },
+              {
+                "title": "Supply Chain Security Is the Whole Enchilada, but Who’s Willing to Pay for It?",
+                "url": "https://krebsonsecurity.com/2018/10/supply-chain-security-is-the-whole-enchilada-but-whos-willing-to-pay-for-it/",
+                "source": "krebsonsecurity.com",
+                "score": 148,
+                "hn_id": "18155517",
+                "hn_url": "https://news.ycombinator.com/item?id=18155517",
+                "summary": "148 points by johnshades, 85 comments"
+              },
+              {
+                "title": "Open source supply chain security at Google [video]",
+                "url": "https://research.swtch.com/acmscored",
+                "source": "research.swtch.com",
+                "score": 126,
+                "hn_id": "38471475",
+                "hn_url": "https://news.ycombinator.com/item?id=38471475",
+                "summary": "126 points by mfrw, 25 comments"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_format_existing_items",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Dùng dữ liệu được cung cấp để định dạng, không gọi công cụ tìm kiếm; cần đọc thủ công args.items để kiểm tra dữ liệu được giữ nguyên."
+      },
+      "input": "Tôi đã có dữ liệu sau, không cần tìm thêm: [{\"title\":\"Lab update\",\"url\":\"https://example.org/lab-update\",\"source\":\"Team notes\",\"summary\":\"Nhóm đã bổ sung bài kiểm tra.\"}]. Hãy trình bày thành danh sách gạch đầu dòng với tiêu đề \"Ghi chú nhóm\".",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "format",
+            "args": {
+              "template": "bullets",
+              "headline": "Ghi chú nhóm"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": false,
+        "args_correct": false,
+        "actual_tool_calls": [],
+        "actual_text": "### Ghi chú nhóm\n\n- [Lab update](https://example.org/lab-update) (Team notes): Nhóm đã bổ sung bài kiểm tra.",
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "missing_tool_call",
+        "failure_type": "wrong_tool",
+        "failures": [
+          "missing tool call format"
+        ]
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G03_social_latest_limit",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Kiểm tra đồng thời query, Latest và limit; phân biệt bài mới nhất với bài top."
+      },
+      "input": "Tìm 4 bài đăng mới nhất trên X chứa cụm từ \"passkey adoption\"; giữ nguyên cụm từ tìm kiếm, ưu tiên mới nhất chứ không phải phổ biến nhất.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "passkey adoption",
+              "search_type": "Latest",
+              "limit": 4
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "search_type": "Latest",
+              "query": "passkey adoption",
+              "limit": 4
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "social_search",
+          "args": {
+            "search_type": "Latest",
+            "query": "passkey adoption",
+            "limit": 4
+          },
+          "result": {
+            "tool": "search_tweets",
+            "error": "RuntimeError",
+            "message": "Missing RAPIDAPI_KEY env var"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G04_missing_platform",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Thiếu nền tảng tìm kiếm và có yêu cầu hỏi trước: không tự chọn Hacker News, X hoặc web."
+      },
+      "input": "Tìm các bài đăng về \"database reliability\" trên nền tảng tôi đã chọn nhé. Tôi chưa nói tên nền tảng trong cuộc trò chuyện này, hãy hỏi lại tôi trước khi tìm.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {}
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn muốn tìm bài đăng về \"database reliability\" trên nền tảng nào?",
+              "response_type": "choice",
+              "options": [
+                "Twitter / X",
+                "Hacker News"
+              ]
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn muốn tìm bài đăng về \"database reliability\" trên nền tảng nào?",
+            "response_type": "choice",
+            "options": [
+              "Twitter / X",
+              "Hacker News"
+            ]
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn muốn tìm bài đăng về \"database reliability\" trên nền tảng nào?",
+            "response_type": "choice",
+            "options": [
+              "Twitter / X",
+              "Hacker News"
+            ],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G05_unsupported_calendar",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Không gọi công cụ research hoặc Telegram để giả lập đặt lịch khi không có công cụ lịch; kiểm tra thủ công câu trả lời có nói rõ giới hạn."
+      },
+      "input": "Tạo ngay một sự kiện trong Google Calendar của tôi tên \"Họp nhóm lab\", lúc 09:00 ngày mai, kéo dài 30 phút. Tôi chỉ cần đặt lịch, không cần tìm thông tin.",
+      "expect": {
+        "no_tool": true
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Tôi không có quyền truy cập vào Google Calendar của bạn để tạo sự kiện trực tiếp. Bạn vui lòng tự tạo sự kiện với thông tin sau nhé:\n\n* **Tên sự kiện:** Họp nhóm lab\n* **Thời gian:** 09:00 ngày mai\n* **Thời lượng:** 30 phút",
+        "case_failure_type": "out_of_scope",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G06_hn_query_limit_correction",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Cập nhật cả chủ đề và số lượng qua nhiều lượt, vẫn dùng Hacker News; không chấm sort."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm 6 bài trên Hacker News với từ khóa \"PostgreSQL\"."
+        },
+        {
+          "role": "user",
+          "content": "Đổi từ khóa thành \"SQLite\", giữ nguyên cách sắp xếp."
+        },
+        {
+          "role": "user",
+          "content": "Lấy 2 bài thôi, dùng đúng từ khóa mới đã chọn."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "hn_search",
+            "args": {
+              "query": "SQLite",
+              "limit": 2
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "hn_search",
+            "args": {
+              "sort": "relevance",
+              "query": "SQLite",
+              "limit": 2
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "hn_search",
+          "args": {
+            "sort": "relevance",
+            "query": "SQLite",
+            "limit": 2
+          },
+          "result": {
+            "tool": "hn_search",
+            "query": "SQLite",
+            "sort": "relevance",
+            "items": [
+              {
+                "title": "Hosting SQLite databases on GitHub Pages or any static file hoster",
+                "url": "https://phiresky.github.io/blog/2021/hosting-sqlite-databases-on-github-pages/",
+                "source": "phiresky.github.io",
+                "score": 1812,
+                "hn_id": "27016630",
+                "hn_url": "https://news.ycombinator.com/item?id=27016630",
+                "summary": "1812 points by phiresky, 244 comments"
+              },
+              {
+                "title": "I'm all-in on server-side SQLite",
+                "url": "https://fly.io/blog/all-in-on-sqlite-litestream/",
+                "source": "fly.io",
+                "score": 1353,
+                "hn_id": "31318708",
+                "hn_url": "https://news.ycombinator.com/item?id=31318708",
+                "summary": "1353 points by dpeck, 404 comments"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_hn_to_web_month",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Đổi nguồn từ Hacker News sang web và mang theo chủ đề, timeframe, số lượng mới."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm 5 bài trên Hacker News về \"WebAssembly\"."
+        },
+        {
+          "role": "user",
+          "content": "Chuyển sang tin tức trên web trong tháng qua, không tìm Hacker News nữa."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ lấy 2 kết quả; giữ nguyên từ khóa \"WebAssembly\" và khoảng thời gian vừa chọn."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "WebAssembly",
+              "topic": "news",
+              "timeframe": "month",
+              "max_results": 2
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "topic": "news",
+              "max_results": 2,
+              "query": "WebAssembly",
+              "timeframe": "month"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "topic": "news",
+            "max_results": 2,
+            "query": "WebAssembly",
+            "timeframe": "month"
+          },
+          "result": {
+            "tool": "web_search",
+            "error": "RuntimeError",
+            "message": "Missing TAVILY_API_KEY env var"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G08_select_second_url",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Giải quyết tham chiếu link thứ hai trong hai URL; không gọi fetch cho cả hai."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tôi có hai link: https://docs.python.org/3/library/json.html và https://docs.python.org/3/library/csv.html ."
+        },
+        {
+          "role": "user",
+          "content": "Tôi đang quan tâm cách xử lý CSV."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ đọc và tóm tắt link thứ hai tôi đã gửi, bỏ link thứ nhất."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://docs.python.org/3/library/csv.html"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://docs.python.org/3/library/csv.html"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "fetch",
+          "args": {
+            "url": "https://docs.python.org/3/library/csv.html"
+          },
+          "result": {
+            "tool": "read_url",
+            "error": "RuntimeError",
+            "message": "Missing FIRECRAWL_API_KEY env var"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G09_cancel_telegram",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Tôn trọng việc hủy yêu cầu gửi ở lượt mới nhất; không gọi send hoặc clarify. Case không yêu cầu gửi thật."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Nội dung dự thảo: \"Nhóm sẽ demo agent vào chiều mai.\" Tôi muốn đăng lên Telegram nhưng chưa xác nhận gửi."
+        },
+        {
+          "role": "user",
+          "content": "Tôi đổi ý, hủy yêu cầu đăng."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ xác nhận bằng lời rằng đã hủy. Không gửi, không tìm kiếm và không hỏi xác nhận gửi nữa."
+        }
+      ],
+      "expect": {
+        "no_tool": true
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Đã hiểu, tôi đã hủy yêu cầu đăng và sẽ không thực hiện gửi tin nhắn hay gọi các công cụ liên quan.",
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G10_format_template_correction",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Nhớ dữ liệu đã có, cập nhật template bullets thành thread và tiêu đề; đọc thủ công args.items để xác minh dữ liệu."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Dữ liệu có sẵn: [{\"title\":\"Eval checklist\",\"url\":\"https://example.org/eval-checklist\",\"source\":\"Team notes\",\"summary\":\"Kiểm tra routing và tham số.\"}]. Hãy dùng dữ liệu này để tạo danh sách gạch đầu dòng."
+        },
+        {
+          "role": "user",
+          "content": "Đổi cách trình bày thành chuỗi bài đánh số, tức template thread."
+        },
+        {
+          "role": "user",
+          "content": "Đặt tiêu đề \"Nhật ký kiểm thử\", giữ kiểu trình bày vừa sửa và dữ liệu ban đầu; không tìm thêm nguồn."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "format",
+            "args": {
+              "template": "thread",
+              "headline": "Nhật ký kiểm thử"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "format",
+            "args": {
+              "template": "thread",
+              "items": [
+                {
+                  "url": "https://example.org/eval-checklist",
+                  "summary": "Kiểm tra routing và tham số.",
+                  "title": "Eval checklist",
+                  "section": "",
+                  "source": "Team notes"
+                }
+              ],
+              "headline": "Nhật ký kiểm thử"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "format",
+          "args": {
+            "template": "thread",
+            "items": [
+              {
+                "url": "https://example.org/eval-checklist",
+                "summary": "Kiểm tra routing và tham số.",
+                "title": "Eval checklist",
+                "section": "",
+                "source": "Team notes"
+              }
+            ],
+            "headline": "Nhật ký kiểm thử"
+          },
+          "result": {
+            "tool": "render_digest",
+            "template": "thread",
+            "markdown": "1/ Kiểm tra routing và tham số. - [Team notes](https://example.org/eval-checklist)",
+            "item_count": 1
+          }
+        }
+      ]
+    }
+  ]
+}

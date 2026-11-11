@@ -4,7 +4,7 @@
 
 - Họ tên: Nguyễn Văn Hùng
 - MSSV: 2A202603816
-- Email:
+- Email: nguyenhungyp19012004@gmail.com
 
 ## 2. Phần việc phụ trách
 
